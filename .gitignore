@@ -1,0 +1,21 @@
+# Ignore environment variable files
+app/application-env/
+instance/
+env/
+# Ignore virtual environment
+venv/
+
+# Bytecode/cache
+__pycache__/
+*.pyc
+
+# Ignore compiled Alembic files
+migrations/__pycache__/
+migrations/versions/__pycache__/
+
+# Ignore SQLite DB and migrations
+*.db
+
+# Ignore VS Code SQLTools extension data
+**/vscode-sqltools/Data/.node-runtimeinstance/ChronicCare.db
+.vscode-sqltools/
