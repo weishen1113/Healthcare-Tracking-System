@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% block title %}Your Insights{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h1 class="title-purple-text">Your Insights</h1>
+        <p class="fs-5">A summary of your appointments, documents, and trends</p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row row-cols-1 row-cols-md-5 g-4 mb-4">
+        <div class="col">
+            <div class="h-100 p-3 bg-white rounded shadow-sm text-center">
+                <h6 class="purple-text">Total Appointments</h6>
+                <p class="fw-bold counter dashboard-p" data-target="{{ total_appointments }}">0</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="h-100 p-3 bg-white rounded shadow-sm text-center">
+                <h6 class="purple-text">Total Documents</h6>
+                <p class="fw-bold counter dashboard-p" data-target="{{ total_documents }}">0</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="h-100 p-3 bg-white rounded shadow-sm text-center">
+                <h6 class="purple-text">Documents Expiring Soon</h6>
+                <p class="fw-bold counter dashboard-p" data-target="{{ documents_expiring_soon }}">0</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="h-100 p-3 bg-white rounded shadow-sm text-center">
+                <h6 class="purple-text">Top Appointment Type</h6>
+                <p class="fw-bold dashboard-p">{{ top_appointment_type }}</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="h-100 p-3 bg-white rounded shadow-sm text-center">
+                <h6 class="purple-text">Most Frequent Practitioner</h6>
+                <p class="fw-bold dashboard-p">{{ most_frequent_practitioner }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <h3 class="purple-text text-center mb-4">Activity Trends</h3>
+
+    <div class="insight">
+        <div class="small-container">
+            <div class="row">
+                <div class="col-md-12 insight-col">
+                    <!-- Appointment Type Pie Chart -->
+                    <div class="insight-container text-center mb-5">
+                        <div class="d-flex justify-content-center">
+                            <div style="max-width: 700px; width: 100%; height: 500px;">
+                                <canvas id="appointmentTypeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appointment Frequency Line Chart -->
+                    <div class="insight-container text-center mb-5">
+                        <div class="text-center mb-2">
+                            <h3 class="chart-title mb-3">Appointment Frequencies</h3>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center gap-2 mb-3">
+                            <label for="sort-range" class="fw-semibold mb-0">Sort by</label>
+                            <select id="sort-range" class="form-select form-select-sm" style="width: 180px;"
+                                    onchange="filterChart(this.value)">
+                                <option value="year" selected>a year</option>
+                                <option value="6months">6 months</option>
+                                <option value="3months">3 months</option>
+                                <option value="month">a month</option>
+                                <option value="week">a week</option>
+                            </select>
+                        </div>
+                        <p id="date-range-label" class="text-muted small mt-n2 mb-3"></p>
+                        <div class="d-flex justify-content-center">
+                            <div style="max-width: 750px; width: 100%; height: 500px;">
+                                <canvas id="appointmentFrequencyChart"></canvas>
+                            </div>
+                        </div>
+                        <p id="chart-warning" class="text-muted small" style="display: none;">
+                            Not enough data to display full time range.
+                        </p>
+                    </div>
+
+                    <!-- Top Practitioners Bar Chart -->
+                    <div class="insight-container text-center mb-5">
+                        <div class="text-center mb-3">
+                            <h3 class="chart-title">Top 6 Practitioners</h3>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <div style="max-width: 750px; width: 100%; height: 500px;">
+                                <canvas id="practitionerBarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<!-- Pie Chart Script -->
+<script>
+    const ctx = document.getElementById('appointmentTypeChart').getContext('2d');
+    const appointmentChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: {{ chart_labels | tojson }},
+    datasets: [{
+        label: 'Appointment Types',
+        data: {{ chart_data | tojson }},
+    backgroundColor: [
+        '#3B82F6', // General
+        '#22C55E', // Follow-up
+        '#EAB308', // Checkup
+        '#8B5CF6', // Consultation
+        '#EF4444'  // Test 
+    ]
+    }]
+    },
+    options: {
+        responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+            legend: {
+                position: 'bottom'
+            },
+            title: {
+                display: true,
+                    text: 'Appointment Types',
+                    font: {
+                    size: 24
+                },
+                color: '#4B0082'
+            },
+            datalabels: {
+                formatter: (value, context) => {
+                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                    const percent = ((value / total) * 100).toFixed(0) + '%';
+                    const label = context.chart.data.labels[context.dataIndex];
+                    return label + '\n' + percent;
+                },
+                    color: 'white',
+                    font: {
+                    weight: 'bold',
+                        size: 14
+                },
+                anchor: 'center',
+                    align: 'center',
+                    textAlign: 'center'
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+    });
+    console.log("Chart labels:", {{ chart_labels | tojson }});
+    console.log("Chart data:", {{ chart_data | tojson }});
+</script>
+
+<!-- Line Chart Data -->
+<script id="line-data" type="application/json">
+    {
+        "labels": {{ chart_month_labels | tojson }},
+    "datasets": [
+    {% for label, values in line_chart_data.items() %}
+    {
+    "label": "{{ label }}",
+    "data": {{ values | tojson }},
+    "backgroundColor": "{{ color_map[label] }}",
+    "borderColor": "{{ color_map[label] }}",
+    "tension": 0.4
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+    ]
+    }
+</script>
+<!-- prettier-ignore-end -->
+<script id="day-data" type="application/json">
+    {
+        "labels": {{ day_labels | tojson }},
+    "datasets": [
+    {% for label, values in line_chart_days.items() %}
+    {
+    "label": "{{ label }}",
+    "data": {{ values | tojson }},
+    "backgroundColor": "{{ color_map[label] }}",
+    "borderColor": "{{ color_map[label] }}",
+    "tension": 0.4
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+    ]
+    }
+</script>
+<script id="month-keys" type="application/json">{{ chart_month_keys | tojson }}</script>
+<script id="latest-month" type="application/json">{{ latest_month_index }}</script>
+<script id="latest-date" type="application/json">{{ latest_date }}</script>
+
+<!-- Line Chart Script -->
+<script src="{{ url_for('static', filename='js/line_chart.js') }}"></script>
+
+<!-- Bar Chart Script -->
+<script>
+    const ctxBar = document.getElementById('practitionerBarChart').getContext('2d');
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: {{ bar_chart_labels | tojson }},
+    datasets: [{
+        label: 'Number of Appointments',
+        data: {{ bar_chart_values | tojson }},
+    backgroundColor: {{ bar_chart_colors | tojson }},
+    borderColor: '#6D28D9',
+        borderWidth: 1
+    }]
+    },
+    options: {
+        responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+            y: {
+                beginAtZero: true,
+                    title: {
+                    display: true,
+                        text: 'Appointments',
+                        font: { weight: 'bold', size: 14 }
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                        text: 'Practitioners',
+                        font: { weight: 'bold', size: 14 }
+                }
+            }
+        },
+        plugins: {
+            legend: { display: false },
+            title: {
+                display: true,
+                    color: '#4B0082'
+            }
+        }
+    }
+    });
+</script>
+
+{% endblock %}

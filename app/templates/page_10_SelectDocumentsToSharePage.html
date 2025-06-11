@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}Share and Receive Documents{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="text-center mb-4">
+    <h1 class="title-purple-text">Share and Receive Documents</h1>
+    <p class="lead">Select the medical documents you’d like to send.</p>
+  </div>
+
+  <div class="bg-white shadow rounded p-4 mb-4 mx-auto" style="max-width:900px;">
+    <h3 class="fw-bold purple-text text-center mb-4">Share Your Documents</h3>
+
+    {% if documents %}
+    <form method="POST" action="{{ url_for('main.share_document') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="table-responsive mb-3">
+        <table class="table table-hover text-center">
+          <thead class="table-light">
+          <tr>
+            <th>Select</th>
+            <th>Document</th>
+            <th>Type</th>
+            <th>Uploaded</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for doc in documents %}
+          <tr>
+            <td>
+              <input class="form-check-input" type="checkbox" name="document_ids" value="{{ doc.id }}"
+                     id="doc-{{ doc.id }}">
+            </td>
+            <td>{{ doc.document_name }}</td>
+            <td>{{ doc.document_type }}</td>
+            <td>{{ doc.upload_date.strftime('%d/%m/%Y') }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="form-check d-flex justify-content-center align-items-center gap-2 mb-4">
+        <input class="form-check-input" type="checkbox" name="include_personal_summary" id="include_personal_summary">
+        <label class="form-check-label upload-title" for="include_personal_summary">
+          Include personal summary file
+        </label>
+      </div>
+
+      <!-- Validation message -->
+      <div id="shareError" class="text-danger text-center mb-2" style="min-height:1.2em;"></div>
+
+      <div class="d-flex justify-content-center align-items-center gap-3 flex-nowrap">
+        <button type="submit" name="action" value="share" id="shareButton" class="btn btn-Appointment px-3 fw-bold"
+                style="border:2px solid #b0e57c;" disabled>
+          Share Internally
+        </button>
+
+        <input type="email" name="recipient_email" id="emailInput" class="form-control" placeholder="Enter user email"
+               style="max-width:240px; min-width:200px; border:2px solid #b0e57c;" required>
+
+        <div class="vr d-none d-md-block" style="height:30px;"></div>
+
+        <button type="submit" name="action" value="download" formaction="{{ url_for('main.export_documents') }}"
+                formmethod="POST" class="btn btn-Tests px-4 fw-bold">
+          Download as ZIP
+        </button>
+      </div>
+    </form>
+    {% else %}
+    <p class="text-muted text-center">You have no documents uploaded yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Documents Shared With You -->
+  <div class="bg-white shadow rounded p-4 mx-auto" style="max-width:900px;">
+    <h3 class="fw-bold purple-text text-center mb-3">Documents Shared With You</h3>
+    {% if shared_documents %}
+    <div class="table-responsive">
+      <table class="table align-middle table-hover text-center">
+        <thead class="table-light">
+        <tr>
+          <th>Document</th>
+          <th>Sender</th>
+          <th>Type</th>
+          <th>Received</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for shared, name, dtype, shared_at, sender_email in shared_documents %}
+        <tr>
+          <td>{{ name }}</td>
+          <td>{{ sender_email }}</td>
+          <td>{{ dtype }}</td>
+          <td>{{ shared_at.strftime('%d/%m/%Y') }}</td>
+          <td>
+            <a href="{{ url_for('main.download_document', doc_id=shared.document_id) }}"
+               class="btn btn-purple-calender btn-sm">
+              Download
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted text-center">No documents shared with you yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  // Inline at end of content ensures inputs exist
+  const emailInput = document.getElementById('emailInput');
+  const shareButton = document.getElementById('shareButton');
+  const errorDiv = document.getElementById('shareError');
+  const docCheckboxes = Array.from(document.querySelectorAll('input[name="document_ids"]'));
+
+  function updateShareButtonState() {
+    const emailValid = /\S+@\S+\.\S+/.test(emailInput.value);
+    const anyChecked = docCheckboxes.some(cb => cb.checked);
+
+    let msg = '';
+    if (!anyChecked && !emailValid) {
+      msg = 'Select at least one document and enter a valid email.';
+    } else if (!anyChecked) {
+      msg = 'Select at least one document.';
+    } else if (!emailValid) {
+      msg = 'Enter a valid email address.';
+    }
+
+    errorDiv.textContent = msg;
+    shareButton.disabled = !!msg;
+  }
+
+  emailInput.addEventListener('input', updateShareButtonState);
+  docCheckboxes.forEach(cb => cb.addEventListener('change', updateShareButtonState));
+  updateShareButtonState();
+</script>
+{% endblock %}

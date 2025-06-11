@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% block title %}Edit Document{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="title-purple-text mt-5">Welcome back, {{ session['first_name'] }}!</h1>
+    </div>
+</div>
+
+<!-- Upcoming Appointments -->
+<div class="upcoming-appt">
+    <div class="small-container">
+        <div class="row">
+
+            <div class="text-center col-md-12 upcoming-appt-col">
+                <h2 class="h2-title mb-4">Your Upcoming Appointments</h2>
+                <div class="d-grid gap-3">
+                    {% for appt in upcoming_appointments %}
+                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 fw-bold">{{ appt.days_away }} Days Away →</div>
+                            <div class="col-md-2">{{ appt.date }}</div>
+                            <div class="col-md-4">{{ appt.practitioner }} ({{ appt.type }})</div>
+                            <div class="col-md-3">{{ appt.start_time }} - {{ appt.end_time }}</div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No upcoming appointments.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Expiring Referrals/Insurance -->
+<div class="upcoming-appt">
+    <div class="small-container">
+        <div class="row">
+
+            <div class="text-center col-md-12 upcoming-appt-col">
+                <h2 class="h2-title mb-4">Your Expiring Referrals / Insurance</h2>
+                <div class="d-grid gap-3">
+                    {% for doc in expiring_docs %}
+                    <div class="p-3 bg-light rounded shadow-sm upcoming-appt-details">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 fw-bold">{{ doc.days_left }} Days Left →</div>
+                            <div class="col-md-3">{{ doc.document_type }}</div>
+                            <div class="col-md-3">{{ doc.practitioner_type }}</div>
+                            <div class="col-md-3">Expires {{ doc.expires_on }}</div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No upcoming document expirations.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="action-h1">Quick Action</h1>
+    </div>
+</div>
+
+<div class="action">
+    <div class="small-container">
+        <div class="row justify-content-center text-center">
+            <div class="col-md-3 action-col"><a class="" href="{{ url_for('main.add_appointment') }}"><img
+                    src="{{url_for('static',filename='images/add-appointment.png')}}"></a><br>
+                <h3>Add Appointment</h3>
+            </div>
+            <div class="col-md-3 action-col"><a class="" href="{{ url_for('main.calendar') }}"><img
+                    src="{{url_for('static',filename='images/view-calendar.png')}}"></a><br>
+                <h3>View Calendar</h3>
+            </div>
+
+            <div class="col-md-3 action-col"><a class="" href="{{ url_for('main.upload_document') }}"><img
+                    src="{{url_for('static',filename='images/upload-document.png')}}"></a><br>
+                <h3>Upload Document</h3>
+            </div>
+            <div class="col-md-3 action-col"><a class="" href="{{ url_for('main.share_document') }}"><img
+                    src="{{url_for('static',filename='images/share-document.png')}}"></a><br>
+                <h3>Share Document</h3>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="featured-h1">Featured Specialisations</h1>
+    </div>
+</div>
+
+<section class="featured">
+    <div class="swiper featured-slider">
+        <div class="swiper-wrapper">
+
+            <!-- Slide 1: Football Club Featured -->
+            <div class="swiper-slide">
+                <div class="row align-items-center">
+                    <div class="col-md-6 d-flex justify-content-center">
+                        <img src="{{url_for('static',filename='images/physiotherapist.png')}}"
+                            class="img-fluid featured-img" alt="Football Club">
+                    </div>
+                    <div class="col-md-6 featured-col text-col">
+                        <div class="text-wrapper">
+                            <span>Now Available</span>
+                            <h3 class="featured-title">Physiotherapy Services Available!</h3>
+                            <p class="featured-desc">Get personalized physiotherapy treatments to improve mobility,
+                                relieve pain, and restore function.</p>
+                            <a href="{{ url_for('main.add_appointment') }}" class="btn">Book an Appointment Now!
+                                &#8594;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- You can add more club slides here following the same pattern -->
+            <!-- Example additional slide -->
+            <div class="swiper-slide">
+                <div class="row align-items-center">
+                    <div class="col-md-6 d-flex justify-content-center">
+                        <img src="{{url_for('static',filename='images/cardiologist.png')}}"
+                            class="img-fluid featured-img" alt="Martial Art">
+                    </div>
+                    <div class="col-md-6 featured-col text-col">
+                        <div class="text-wrapper">
+                            <span>Now Available</span>
+                            <h3 class="featured-title">Cardiology Consultations Open!</h3>
+                            <p class="featured-desc">Monitor and improve your heart health with expert advice and
+                                advanced cardiac care.</p>
+                            <a href="{{ url_for('main.add_appointment') }}" class="btn">Book an Appointment Now!
+                                &#8594;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="swiper-slide">
+                <div class="row align-items-center">
+                    <div class="col-md-6 d-flex justify-content-center">
+                        <img src="{{url_for('static',filename='images/neurologist.png')}}"
+                            class="img-fluid featured-img" alt="Computing">
+                    </div>
+                    <div class="col-md-6 featured-col text-col">
+                        <div class="text-wrapper">
+                            <span>Now Available</span>
+                            <h3 class="featured-title">Neurology Expertise at Your Service!</h3>
+                            <p class="featured-desc">Consult with specialist neurologists for diagnosis and
+                                treatment of brain and nerve disorders.</p>
+                            <a href="{{ url_for('main.add_appointment') }}" class="btn">Book an Appointment Now!
+                                &#8594;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Optional: Add pagination or arrows -->
+        <div class="swiper-pagination featured-pagination"></div>
+        <div class="swiper-button-prev featured-prev"></div>
+        <div class="swiper-button-next featured-next"></div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="testimonial-h1">Testimonials</h1>
+    </div>
+</div>
+
+<div class="testimonial">
+    <div class="small-container">
+        <div class="row">
+            <div class="col-md-4 testimonial-col">
+                <img src="{{url_for('static',filename='images/elon-musk.png')}}"><br>
+                <h3>Elon Musk</h3>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i><br>
+                <i class="fa-solid fa-quote-left"></i><br>
+                <p>A very brilliant healthcare system, it is indeed an advanced efficient system. I can
+                    certainly see a
+                    potential in growth, development and success.</p>
+
+            </div>
+
+            <div class="col-md-4 testimonial-col">
+                <img src="{{url_for('static',filename='images/the-rock.png')}}"><br>
+                <h3>Dwayne Johnson</h3>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i><br>
+                <i class="fa-solid fa-quote-left"></i><br>
+                <p>Came here to fix my headache and what do you know? It's completely cured, I feel completely
+                    relieved and much lighter now.</p>
+
+            </div>
+
+            <div class="col-md-4 testimonial-col">
+                <img src="{{url_for('static',filename='images/stephen-chow.png')}}"><br>
+                <h3>Stephen Chow</h3>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i><br>
+                <i class="fa-solid fa-quote-left"></i><br>
+                <p>呢個醫療系統真高級，設備齊全，各種功能，有效, 有水準服務，真係好犀利! 冇得頂呀! 10/10 would recommend!!</p>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="partner-h1">Partnership</h1>
+    </div>
+</div>
+<div class="partner">
+    <div class="small-container">
+        <div class="row">
+            <div class="col-6 col-sm-4 col-md-2 mb-4">
+                <a href=""><img src="{{url_for('static',filename='images/UWA-logo.png')}}"></a>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2 mb-4">
+                <a href=""><img src="{{url_for('static',filename='images/samsung.png')}}"></a>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2 mb-4">
+                <a href=""><img src="{{url_for('static',filename='images/coke.png')}}"></a>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2 mb-4">
+                <a href=""><img src="{{url_for('static',filename='images/honda.png')}}"></a>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2 mb-4">
+                <a href=""><img src="{{url_for('static',filename='images/ibm.png')}}"></a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

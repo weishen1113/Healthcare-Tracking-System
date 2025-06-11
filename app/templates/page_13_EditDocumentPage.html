@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Edit Document{% endblock %}
+{% block content %}
+
+<h1 class="title-purple-text text-center mt-5">Edit Document</h1>
+
+<div class="container mt-4 member-timetable-page shadow">
+    <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <!-- File Upload -->
+        <div class="d-flex flex-column align-items-center mt-3 mb-5">
+            <h4 class="mb-3 upload-title"><strong>Choose File</strong></h4>
+            <div class="input-group shadow-sm">
+                <input type="file" class="form-control" name="upload_document" id="fileUpload">
+            </div>
+            {% if document.file %}
+            <p class="text-muted mt-2">Current File:
+                <a href="{{ url_for('static', filename='uploads/' + document.file) }}" target="_blank">
+                    {{ document.file }}
+                </a>
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- Document Name and Upload Date -->
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h4 class="mb-2 upload-title"><strong>Document Name</strong></h4>
+                <div class="input-group shadow-sm w-75">
+                    <input type="text" class="form-control form-control-sm" name="document_name"
+                           value="{{ document.document_name }}" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h4 class="mb-2 upload-title"><strong>Date Uploaded</strong></h4>
+                <div class="input-group shadow-sm w-75">
+                    <!-- Removed readonly to allow editing of the upload date -->
+                    <input type="date" class="form-control form-control-sm" name="upload_date"
+                           value="{{ document.upload_date.strftime('%Y-%m-%d') }}">
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Type and Notes -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h4 class="upload-title"><strong>Document Type</strong></h4>
+                <select class="form-select shadow-sm w-75" name="document_type" required>
+                    <option value="referral" {% if document.document_type == "referral" %}selected{% endif %}>Referral</option>
+                    <option value="report" {% if document.document_type == "report" %}selected{% endif %}>Report</option>
+                    <option value="invoice" {% if document.document_type == "invoice" %}selected{% endif %}>Invoice</option>
+                    <option value="scripts" {% if document.document_type == "scripts" %}selected{% endif %}>Scripts</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <h4 class="mb-2 upload-title"><strong>Notes (Optional)</strong></h4>
+                <div class="input-group shadow-sm w-75">
+                    <textarea class="form-control form-control-sm" name="document_notes" rows="4"
+
+                              placeholder="Enter a short note or comment about the document (optional)">{{ document.document_notes or '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practitioner Name and Expiration Date -->
+        <div class="row mb-5">
+            <div class="col-md-6 move-up-practitioner">
+                <h4 class="upload-title practitioner"><strong>Practitioner Name</strong></h4>
+                <div class="input-group shadow-sm w-75">
+                    <input type="text" class="form-control form-control-sm" name="practitioner_name"
+                           value="{{ document.practitioner_name }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h4 class="upload-title practitioner"><strong>Expiration Date (Optional)</strong></h4>
+                <div class="d-flex align-items-center mb-2">
+                    <input class="form-check-input me-2 custom-checkbox" type="checkbox" id="enableExpirationDate"
+                           {% if document.expiration_date %}checked{% endif %}>
+                    <label class="form-check-label upload-title mb-0 me-3" for="enableExpirationDate"></label>
+                    <input type="date" class="form-control form-control-sm shadow-sm w-75" id="expirationDateField"
+                           name="expiration_date"
+                           value="{{ document.expiration_date.strftime('%Y-%m-%d') if document.expiration_date else '' }}"
+                           {% if not document.expiration_date %}disabled{% endif %}>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practitioner Type and Buttons -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h4 class="upload-title"><strong>Practitioner Type</strong></h4>
+                <select class="form-select shadow-sm w-75" name="practitioner_type" id="practitioner_type">
+                    <option value="" disabled {% if not document.practitioner_type %}selected{% endif %} style="opacity: 0.6;">Select an option</option>
+                    <option value="gp" {% if document.practitioner_type == "gp" %}selected{% endif %}>GP</option>
+                    <option value="specialist" {% if document.practitioner_type == "specialist" %}selected{% endif %}>Specialist</option>
+                    <option value="doctor" {% if document.practitioner_type == "doctor" %}selected{% endif %}>Doctor</option>
+                    <option value="surgeon" {% if document.practitioner_type == "surgeon" %}selected{% endif %}>Surgeon</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-upload shadow-sm w-75 mt-4" type="submit">Confirm Document Changes</button>
+                <div class="d-flex justify-content-center mt-3 mb-2">
+                    <a href="{{ url_for('main.medical_document') }}" class="btn btn-outline-danger w-25">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Enable/Disable Expiration Date Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkbox = document.getElementById("enableExpirationDate");
+        const expirationField = document.getElementById("expirationDateField");
+
+        checkbox.addEventListener("change", function () {
+            expirationField.disabled = !this.checked;
+        });
+    });
+</script>
+
+{% endblock %}

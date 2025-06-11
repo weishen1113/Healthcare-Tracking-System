@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Upload New Document{% endblock %}
+{% block content %}
+
+<h1 class="title-purple-text text-center mt-5">Upload New Document</h1>
+
+<div class="container mt-5 member-timetable-page shadow">
+    <form class="file-upload" action="{{ url_for('main.upload_document') }}" method="POST" enctype="multipart/form-data">
+        <!-- Manual CSRF token, just like in your appointments form -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <!-- Choose File -->
+        <div class="d-flex flex-column align-items-center mt-3 mb-5">
+            <h4 class="mb-3 upload-title"><strong>Choose File</strong></h4>
+            <div class="input-group shadow-sm w-75">
+                <input type="file" class="form-control" name="upload_document" id="fileUpload" required>
+            </div>
+        </div>
+
+        <!-- Document Name and Upload Date -->
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h4 class="mb-2 upload-title"><strong>Document Name</strong></h4>
+                <div class="input-group shadow-sm w-75">
+                    <input type="text" class="form-control form-control-sm" name="document_name"
+                           placeholder="Enter a name for your document" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h4 class="mb-2 upload-title"><strong>Date Uploaded</strong></h4>
+                <div class="input-group shadow-sm w-75">
+                    <input type="date" class="form-control form-control-sm" name="upload_date" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Type and Notes -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h4 class="upload-title"><strong>Document Type</strong></h4>
+                <select class="form-select shadow-sm w-75" name="document_type" required>
+                    <option value="" disabled selected style="opacity: 0.6;">Select an option</option>
+                    <option value="report">Report</option>
+                    <option value="invoice">Invoice</option>
+                    <option value="scripts">Scripts</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <h4 class="mb-2 upload-title"><strong>Notes (Optional)</strong></h4>
+                <div class="input-group shadow-sm w-75">
+                    <textarea class="form-control form-control-sm" name="document_notes" rows="4"
+                              placeholder="Enter a short note or comment about the document (optional)"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practitioner Name and Expiration Date -->
+        <div class="row mb-5">
+            <div class="col-md-6 move-up-practitioner">
+                <h4 class="upload-title practitioner"><strong>Practitioner Name</strong></h4>
+                <div class="input-group shadow-sm w-75">
+                    <input type="text" class="form-control form-control-sm" name="practitioner_name"
+                           placeholder="Enter provider name">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h4 class="upload-title practitioner"><strong>Expiration Date (Optional)</strong></h4>
+                <div class="d-flex align-items-center mb-2">
+                    <input class="form-check-input me-2 custom-checkbox" type="checkbox" id="enableExpirationDate"
+                           name="expiration_enabled"
+                           onclick="document.getElementById('expirationDateField').disabled = !this.checked;">
+                    <label class="form-check-label upload-title mb-0 me-3" for="enableExpirationDate">
+                        Enable
+                    </label>
+                    <input type="date" class="form-control form-control-sm shadow-sm w-75" id="expirationDateField"
+                           name="expiration_date" placeholder="Select a date" disabled>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practitioner Type and Submit Button -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h4 class="upload-title"><strong>Practitioner Type</strong></h4>
+                <select class="form-select shadow-sm w-75" name="practitioner_type">
+                    <option value="" disabled selected style="opacity: 0.6;">Select an option</option>
+                    <option value="gp">GP</option>
+                    <option value="specialist">Specialist</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="surgeon">Surgeon</option>
+                </select>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-upload shadow-sm w-75">
+                    Upload Document
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Keep checkbox-based date logic here if needed
+</script>
+
+{% endblock %}

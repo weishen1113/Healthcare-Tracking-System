@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Your Profile{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h1 class="title-purple-text">Your Profile</h1>
+        <p class="lead">Manage your personal and contact details</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('main.user_profile') }}">
+        {{ form.hidden_tag() }}
+
+        <!-- Essential Info -->
+        <div class="bg-white rounded-4 p-4 mb-4 shadow-sm mx-auto" style="max-width: 1000px;">
+            <h4 class="purple-text fw-bold mb-3">Essential Information</h4>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    {{ form.first_name.label(class="form-label fw-bold purple-text") }}
+                    {{ form.first_name(class="form-control") }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.last_name.label(class="form-label fw-bold purple-text") }}
+                    {{ form.last_name(class="form-control") }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.email.label(class="form-label fw-bold purple-text") }}
+                    {{ form.email(class="form-control", readonly=True) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Optional Info -->
+        <div class="bg-white rounded-4 p-4 mb-4 shadow-sm mx-auto" style="max-width: 1000px;">
+            <h4 class="purple-text fw-bold mb-3">Optional Information</h4>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    {{ form.mobile_number.label(class="form-label fw-bold purple-text") }}
+                    {{ form.mobile_number(class="form-control") }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.insurance_type.label(class="form-label fw-bold purple-text") }}
+                    {{ form.insurance_type(class="form-control") }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.dob.label(class="form-label fw-bold purple-text") }}
+                    {{ form.dob(class="form-control") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.address.label(class="form-label fw-bold purple-text") }}
+                    {{ form.address(class="form-control") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.gender.label(class="form-label fw-bold purple-text") }}
+                    {{ form.gender(class="form-control") }}
+                </div>
+            </div>
+
+            <!-- Change Password button inside the box -->
+            <div class="mt-4 text-center">
+                <a href="{{ url_for('main.change_password') }}" class="btn btn-info text-white px-4 fw-bold">
+                    Change Password
+                </a>
+            </div>
+        </div> <!-- closes optional info box -->
+
+        <!-- Save Changes Button OUTSIDE the optional info box -->
+        <div class="text-center mt-4" style="max-width: 1000px; margin: 0 auto;">
+            <button type="submit" class="btn btn-purple-calender px-4 fw-bold">
+                Save Changes
+            </button>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

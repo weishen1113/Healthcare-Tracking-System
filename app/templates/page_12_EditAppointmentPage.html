@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block title %}Edit Document{% endblock %}
+{% block content %}
+
+<title>Edit Appointment</title>
+</head>
+
+<body>
+
+{% include 'navbar.html'%}
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="h1-title">Edit Appointment</h1>
+    </div>
+</div>
+
+<div class="add-appt">
+    <div class="small-container">
+        <form method="POST" action="#">
+            <div class="row">
+
+                <div class="col-md-12 add-appt-col">
+                    <div class="add-appt-container">
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="practitioner_type" class="form-label">Practitioner Type</label>
+                                <select name="practitioner_type" class="form-select" required>
+                                    <option>General Practitioner (GP)</option>
+                                    <option>Specialist</option>
+                                    <option>Physiotherapist</option>
+                                    <option>Psychologist</option>
+                                    <option>Psychiatrist</option>
+                                    <option>Dentist</option>
+                                    <option>Surgeon</option>
+                                    <option>Nurse Practitioner</option>
+                                    <option>Chiropractor</option>
+                                    <option>Dietitian</option>
+                                    <option selected>Cardiologist</option>
+                                    <option>Dermatologist</option>
+                                    <option>Endocrinologist</option>
+                                    <option>Neurologist</option>
+                                    <option>Oncologist</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="practitioner" class="form-label">Practitioner Name</label>
+                                <select name="practitioner" class="form-select" required>
+                                    <option value="">-- Select Practitioner --</option>
+                                    <option>Dr. Alex</option>
+                                    <option>Dr. Henry</option>
+                                    <option selected>Dr. Tan</option>
+                                    <option>Dr. Derrick</option>
+                                    <option>Dr. Wong</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" name="date" value="2025-05-01" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="time" class="form-label">Available Time Slots</label>
+                                <select name="time" class="form-select" required>
+                                    <option value="">-- Select Time Slot --</option>
+                                    <option>9:00am - 10:00am</option>
+                                    <option>10:00am - 11:00am</option>
+                                    <option>11:00am - 12:00pm</option>
+                                    <option>12:00pm - 1:00pm</option>
+                                    <option selected>1:30pm - 2:30pm</option>
+                                    <option>2:00pm - 3:00pm</option>
+                                    <option>3:00pm - 4:00pm</option>
+                                    <option>4:00pm - 5:00pm</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Location</label>
+                                <input type="text" class="form-control" name="location" value="St Charles Hospital">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Provider Number (Optional)</label>
+                                <input type="text" class="form-control" name="provider_number" value="9876543210">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Appointment Type</label>
+                            <select class="form-select" name="appointment_type" required>
+                                <option value="">-- Select Type --</option>
+                                <option>General</option>
+                                <option>Follow-up</option>
+                                <option>Checkup</option>
+                                <option selected>Consultation</option>
+                                <option>Test</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" name="notes"
+                                      rows="3">Bring previous test results</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Reminder</label><br>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="reminder"
+                                       value="2 hours before">
+                                <label class="form-check-label">2 hours before</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="reminder"
+                                       value="12 hours before" checked>
+                                <label class="form-check-label">12 hours before</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="reminder" value="1 day before"
+                                       checked>
+                                <label class="form-check-label">1 day before</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="reminder"
+                                       value="1 week before">
+                                <label class="form-check-label">1 week before</label>
+                            </div>
+                            <div class="form-check form-check-inline mt-2">
+                                <label class="form-check-label">Custom reminder:</label>
+                                <input type="date" class="form-control d-inline-block w-auto ms-2"
+                                       name="reminder_custom" value="2025-04-30">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-3 mt-4">
+                            <button type="submit" class="btn add-appt-submit">Update Appointment</button>
+                            <button type="button" class="btn add-appt-submit">Cancel Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

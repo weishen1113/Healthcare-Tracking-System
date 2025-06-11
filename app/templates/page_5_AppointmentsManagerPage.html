@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Appointment Manager{% endblock %}
+{% block content %}
+
+<!-- Main heading -->
+<h1 class="title-purple-text text-center mt-5">Your Appointments</h1>
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <a href="{{ url_for('main.add_appointment') }}" class="btn btn-purple-calender px-4 py-2">
+                + Add Appointment
+            </a>
+        </div>
+    </div>
+
+    <form method="GET" class="d-flex flex-wrap align-items-end gap-3 mb-3">
+        <!-- Search -->
+        <div class="flex-grow-1">
+            <label for="q" class="form-label fw-semibold text-purple">Search by practitioner, type, or notes</label>
+            <input type="text" name="q" class="form-control" placeholder="e.g. Dr Jess or 'Checkup'"
+                value="{{ request.args.get('q', '') }}">
+        </div>
+
+        <!-- Date filter -->
+        <div>
+            <label for="date" class="form-label fw-semibold text-purple">Appointment Date</label>
+            <input type="date" name="date" class="form-control" value="{{ request.args.get('date', '') }}">
+        </div>
+
+        <!-- Type dropdown -->
+        <div>
+            <label for="type" class="form-label fw-semibold text-purple">Appointment Type</label>
+            <select name="type" class="form-select">
+                <option value="">All types</option>
+                <option value="general" {% if request.args.get('type')=='general' %}selected{% endif %}>General</option>
+                <option value="follow-up" {% if request.args.get('type')=='follow-up' %}selected{% endif %}>Follow-Up
+                </option>
+                <option value="test" {% if request.args.get('type')=='test' %}selected{% endif %}>Test</option>
+                <option value="checkup" {% if request.args.get('type')=='checkup' %}selected{% endif %}>Checkup</option>
+                <option value="consultation" {% if request.args.get('type')=='consultation' %}selected{% endif %}>
+                    Consultation</option>
+            </select>
+        </div>
+
+        <!-- Sort dropdown -->
+        <div>
+            <label for="order" class="form-label fw-semibold text-purple">Sort By</label>
+            <select name="order" class="form-select">
+                <option value="asc" {% if request.args.get('order')=='asc' %}selected{% endif %}>Date ↑</option>
+                <option value="desc" {% if request.args.get('order')=='desc' %}selected{% endif %}>Date ↓</option>
+            </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2 align-items-end">
+            <button type="submit" class="btn btn-purple-calender px-4 fw-bold">Search</button>
+            <a href="{{ url_for('main.appointment_manager') }}" class="btn btn-outline-secondary px-4 fw-bold">Clear</a>
+        </div>
+    </form>
+
+    <!-- Appointment result count -->
+    {% if appointments %}
+    <p class="text-center text-muted">{{ appointments|length }} appointment(s) found</p>
+    {% else %}
+    <p class="text-center text-danger">No matching appointments found.</p>
+    {% endif %}
+
+    <!-- Appointment table -->
+    <div class="card shadow-sm p-4">
+        <div class="table-responsive">
+            <table class="table align-middle text-center">
+                <thead class="fw-bold text-muted">
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Type</th>
+                        <th>Practitioner</th>
+                        <th>Location</th>
+                        <th>Notes</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in appointments %}
+                    <tr>
+                        <td><strong>{{ appt.appointment_date.strftime('%d/%m/%y') }}</strong></td>
+                        <td>{{ appt.starting_time.strftime('%I:%M %p') }}</td>
+                        <td>{{ appt.appointment_type }}</td>
+                        <td>{{ appt.practitioner_name }}</td>
+                        <td>{{ appt.location }}</td>
+                        <td>{{ appt.appointment_notes }}</td>
+                        <td>
+                            {% if appt.status == "Today" %}
+                            <span class="badge bg-today">Today</span>
+                            {% elif appt.status == "Upcoming" %}
+                            <span class="badge bg-upcoming">Upcoming</span>
+                            {% elif appt.status == "Completed" %}
+                            <span class="badge bg-completed">Completed</span>
+                            {% else %}
+                            <span class="badge bg-unknown">Unknown</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-nowrap">
+                            <a href="{{ url_for('main.edit_appointment', appointment_id=appt.id) }}"
+                                class="btn btn-Tests btn-sm text-dark me-1">Edit</a>
+                            <button data-id="{{ appt.id }}" onclick="deleteAppointment(this.dataset.id)"
+                                class="btn btn-Missed btn-sm">Cancel</button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-muted">No appointments found. Book one to get started!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

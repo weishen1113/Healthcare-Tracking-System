@@ -1,0 +1,74 @@
+<!-- This page was written by the team member: Aleksandra Lozyk (Ola)  -->
+
+{% extends 'base.html' %}
+{% block title %}Change Password{% endblock %}
+{% block content %}
+<div class="container py-3">
+    <div class="text-center mb-4">
+        <h1 class="purple-text" style="font-size: 3rem;">Change Password</h1>
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 45.5vh;">
+        <div class="p-4 shadow rounded" style="background-color: white; max-width: 420px; width: 100%;">
+            <form method="POST" action="{{ url_for('main.change_password') }}">
+                <div class="msg-col">
+                    {% if msg %}
+                    <div class="msg">{{ msg }}</div>
+                    {% endif %}
+                </div>
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3 text-start">
+                    {{ form.current_password.label(class="form-label") }}
+                    <div class="form-group position-relative mb-3">
+                        {{ form.current_password(class='form-control pe-5', placeholder="Enter current password", id='current_password') }}
+                        <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 toggle-password"
+                           data-target="current_password" style="cursor: pointer;"></i>
+                    </div>
+                    {% if form.current_password.errors %}
+                    {% for error in form.current_password.errors %}
+                    <div class="error-msg">{{ error }}</div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="mb-3 text-start">
+                    {{ form.new_password.label(class="form-label") }}
+                    <div class="form-group position-relative mb-3">
+                        {{ form.new_password(class='form-control pe-5', placeholder="Enter new password", id='new_password') }}
+                        <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 toggle-password"
+                           data-target="new_password" style="cursor: pointer;"></i>
+                    </div>
+                    {% if form.new_password.errors %}
+                    {% for error in form.new_password.errors %}
+                    <div class="error-msg">{{ error }}</div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="mb-4 text-start">
+                    {{ form.confirm_password.label(class="form-label") }}
+                    <div class="form-group position-relative mb-3">
+                        {{ form.confirm_password(class='form-control pe-5', placeholder="Confirm new password", id='confirm_password') }}
+                        <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3 toggle-password"
+                           data-target="confirm_password" style="cursor: pointer;"></i>
+                    </div>
+                    {% if form.confirm_password.errors %}
+                    {% for error in form.confirm_password.errors %}
+                    <div class="error-msg">{{ error }}</div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="d-grid mb-3">
+                    {{ form.submit(class="register-btn") }}
+                </div>
+
+                <p class="text-center mb-0">
+                    <a href="{{ url_for('main.user_profile') }}" class="purple-link">Back to Profile</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

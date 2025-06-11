@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Your Calendar{% endblock %}
+{% block content %}
+
+
+<h1 class="title-purple-text text-center mt-5">Your Calendar</h1>
+
+<div class="d-flex justify-content-center align-items-center gap-3 mt-3 mb-5">
+    <h5 class="slightly-right-calender mb-0"><strong>View your Calendar with a</strong></h5>
+    <select class="form-select form-select-calender" id="viewSelector" disabled>
+        <option selected value="month">Month View</option>
+    </select>
+    <button class="btn btn-purple-calender">Display</button>
+</div>
+
+<!-- Main Content -->
+<div class="container mt-5 member-timetable-page">
+    <div id="month-timetable">
+        <div class="d-flex gap-3 mt-3 mb-4">
+            <div class="week-slider d-flex align-items-center justify-content-center gap-3 p-3 shadow rounded">
+                <button class="arrow-btn btn btn-outline-dark" id="prevMonth">&#8592;</button>
+                <h5 id="monthYearHeading" class="m-0"></h5>
+                <button class="arrow-btn btn btn-outline-dark" id="nextMonth">&#8594;</button>
+            </div>
+            <div class="button-group-bg d-inline-flex justify-content-end gap-3 p-3 rounded shadow-sm mt-4 calender-appointment">
+                <button class="btn btn-Appointment">Appointment</button>
+                <button class="btn btn-Tests">Documents</button>
+                <button class="btn btn-Expirations">Expiration</button>
+                <button class="btn btn-Missed">Test/Scans</button>
+            </div>
+        </div>
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-bordered text-center mb-5">
+                <thead class="table-outline-dark">
+                <tr>
+                    <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+                </tr>
+                </thead>
+                <tbody id="monthCalendarBody">
+                <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Tooltip-style floating box -->
+<div id="cellTooltip" class="tooltip-box" style="display:none; position:absolute; z-index:1000;">
+    <div class="tooltip-header d-flex justify-content-between align-items-center">
+        <span><strong>Details</strong></span>
+    </div>
+    <hr class="my-2">
+    <div id="tooltipContent"></div>
+</div>
+
+<script type="text/javascript">
+    // Pass the appt_data and doc_data from server-side to JS
+    const appointments = {{ appt_data | tojson | safe }};
+    const documents = {{ doc_data | tojson | safe }};
+</script>
+
+{% block scripts %}
+<script src={{url_for('static',filename='calender.js' )}}></script>
+
+{% endblock %}
+
+{% endblock %}

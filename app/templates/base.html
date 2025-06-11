@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}Flask App{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    {% block css %}{% endblock %}
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles.css')}}">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm sticky-top">
+        <div class="container">
+            <!-- Replace this with your own logo -->
+
+            <a class="navbar-brand"
+                href="{% if session.role == 'member' %}{{ url_for('main.dashboard') }}{% else %}{{ url_for('main.index') }}{% endif %}">
+                <img class="logo" src="{{ url_for('static', filename='images/chronic-care-title.png') }}" alt="logo">
+            </a>
+
+
+            <!-- Toggler/collapsibe Button for small screens -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#myList"
+                aria-controls="myList" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- List of links -->
+            <div class="collapse navbar-collapse difficulty-level-buttons" id="myList">
+                <ul class="navbar-nav mx-auto">
+                    {% if session.get('role') == 'member' %}
+                    <li class="nav-item nav1">
+                        <a href="{{ url_for('main.dashboard') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.dashboard' %}active-link{% endif %}">Home</a>
+                    </li>
+                    <li class="nav-item nav1">
+                        <a href="{{ url_for('main.appointment_manager') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.appointment_manager' %}active-link{% endif %}">Appointment</a>
+                    </li>
+                    <li class="nav-item nav1">
+                        <a href="{{ url_for('main.calendar') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.calendar' %}active-link{% endif %}">Calendar</a>
+                    </li>
+                    <li class="nav-item nav1">
+                        <a href="{{ url_for('main.medical_document') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.medical_document' %}active-link{% endif %}">Documents</a>
+                    </li>
+
+                    <li class="nav-item nav1">
+                        <a href="{{ url_for('main.insights') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.insights' %}active-link{% endif %}">Insights</a>
+                    </li>
+
+                    <li class="nav-item nav1">
+                        <a href="{{ url_for('main.user_profile') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.user_profile' %}active-link{% endif %}">Profile</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item nav1">
+                        <a href="{{ url_for('main.index') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.index' %}active-link{% endif %}">Home</a>
+                    </li>
+                    <li class="nav-item nav1">
+                        <a href="{{ url_for('main.login') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.login' %}active-link{% endif %}">Login</a>
+                    </li>
+                    <li class="nav-item nav1">
+                        <a href="{{ url_for('main.register') }}"
+                            class="nav-item1 {% if request.endpoint == 'main.register' %}active-link{% endif %}">Register</a>
+                    </li>
+                    {% endif %}
+
+                    {% if session.get('role') %}
+                    <li class="nav-item nav1">
+                        <a class="nav-item1" href="{{ url_for('main.logout') }}">Log Out</a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav">
+                    <!-- Notification Bell -->
+                    <li class="nav-item dropdown d-flex align-items-end">
+                        <a class="nav-link position-relative d-inline-block" href="#" id="notification-link"
+                            role="button" data-bs-toggle="dropdown">
+                            <i class="fa-regular fa-bell fs-5"></i>
+                            {% if n_not|default(0) > 0 %}
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ n_not }}
+                            </span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow p-3 notification-menu">
+                            {% for note in notifications %}
+                            <li class="mb-3 border-bottom pb-2">
+                                <div>
+                                    {% if note.title == "Reminder" %}
+                                    <span class="notif-bold-text">Custom reminder</span> for {{ note.body }}
+                                    appointment at
+                                    <span class="notif-bold-text">{{ note.date }}</span><br>
+                                    <span class="notif-bold-text">Reminder: {{ note.reminder_info }}</span><br>
+                                    <small class="notif-small-text">Custom reminder: {{ note.reminder_date }}</small>
+                                    <br>
+                                    <small>Notified on: {{ note.triggered_on }}</small>
+
+                                    {% elif note.title == "Shared Document" %}
+                                    <span class="notif-bold-text">{{ note.first_name }}</span> {{ note.body }}
+                                    <a href="{{ url_for('main.share_document') }}"
+                                        class="btn btn-notif btn-sm mt-2 mb-1">View Document</a><br>
+                                    <small>Shared on: {{ note.date }} {{ note.time }}</small><br>
+
+                                    {% else %}
+                                    <span class="notif-bold-text">{{ note.title }}:</span> {{ note.body }}
+                                    appointment at
+                                    <span class="notif-bold-text">{{ note.date }}</span><br>
+                                    <span class="notif-bold-text">Reminder: {{ note.reminder_info }}</span><br>
+                                    <small>Notified on: {{ note.triggered_on }}</small>
+                                    {% endif %}
+
+                                    {% if session.notifications_viewed_at %}
+                                    <div class="text-success mt-1"><small>✓ Seen</small></div>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+
+                    <!-- Welcome Message -->
+                    <li class="nav-item nav2 d-flex align-items-center ms-3">
+                        {% if session.get('role') == 'member' %}
+                        <span class="nav-link">Welcome <strong class="text-danger">{{ session.first_name
+                                }}</strong></span>
+                        {% else %}
+                        <span class="nav-link">Welcome <strong class="text-danger">Guest</strong></span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    {% block content %}{% endblock %}
+
+
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-6 footer-col">
+                    <p>&copy; Copyright 2025. <span id='footer-name'>Chronic Care</span></p>
+                </div>
+
+
+                <div class="col-md-6 footer-col">
+                    <p>Connect with me on <a class='footer-link' href=''>LinkedIn</a> or <a class='footer-link'
+                            href=''>Github</a>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <!-------for ads slider-------->
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+    <!-- Bootstrap Javascript bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
+        </script>
+    <!------- for socket -------->
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+
+
+    <script src={{url_for('static',filename='main.js' )}}></script>
+</body>
+
+</html>

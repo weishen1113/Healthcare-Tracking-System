@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Add Appointment{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="text-center">
+        {% set is_edit = appt is defined and appt is not none %}
+        <h1 class="title-purple-text mt-5">{{ 'Edit Appointment' if is_edit else 'Add Appointment' }}</h1>
+    </div>
+</div>
+
+<div class="add-appt">
+    <div class="small-container">
+        <form method="POST"
+              action="{% if is_edit %}{{ url_for('main.edit_appointment', appointment_id=appt.id) }}{% else %}{{ url_for('main.add_appointment') }}{% endif %}">
+            <div class="row">
+                <div class="col-md-12 add-appt-col">
+                    <div class="add-appt-container">
+
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" name="appointment_date"
+                                       value="{{ appt.appointment_date.strftime('%Y-%m-%d') if is_edit else '' }}"
+                                       required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="time" class="form-label">Time</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <input type="time" class="form-control" name="starting_time"
+                                           value="{{ appt.starting_time.strftime('%H:%M') if is_edit else '' }}" required>
+                                    <span>to</span>
+                                    <input type="time" class="form-control" name="ending_time"
+                                           value="{{ appt.ending_time.strftime('%H:%M') if is_edit else '' }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="practitioner" class="form-label">Practitioner Name</label>
+                                <input type="text" class="form-control" name="practitioner_name"
+                                       value="{{ appt.practitioner_name if is_edit else '' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="practitioner_type" class="form-label">Practitioner Type</label>
+                                <select name="practitioner_type" class="form-select" required>
+                                    <option value="" disabled {% if not is_edit %}selected{% endif %}>-- Select
+                                        Practitioner Type --</option>
+                                    {% for option in [
+                                    "General Practitioner (GP)", "Specialist", "Physiotherapist", "Psychologist",
+                                    "Psychiatrist", "Dentist", "Surgeon", "Nurse Practitioner", "Chiropractor",
+                                    "Dietitian", "Cardiologist", "Dermatologist", "Endocrinologist", "Neurologist",
+                                    "Oncologist"
+                                    ] %}
+                                    <option value="{{ option }}" {% if is_edit and appt.practitioner_type==option
+                                            %}selected{% endif %}>
+                                        {{ option }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Location</label>
+                                <input type="text" class="form-control" name="location"
+                                       value="{{ appt.location if is_edit else '' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Provider Number (Optional)</label>
+                                <input type="text" class="form-control" name="provider_number"
+                                       value="{{ appt.provider_number if is_edit else '' }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Appointment Type</label>
+                            <select class="form-select" name="appointment_type" required>
+                                <option value="" disabled {% if not is_edit %}selected{% endif %}>-- Select Type --
+                                </option>
+                                {% for type in ["General", "Follow-up", "Checkup", "Consultation", "Test"] %}
+                                <option value="{{ type }}" {% if is_edit and appt.appointment_type==type %}selected{%
+                                        endif %}>{{ type }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" name="appointment_notes"
+                                      rows="3">{{ appt.appointment_notes if is_edit else '' }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Reminder</label><br>
+                            {% set selected_reminders = appt.reminder.split(',') if is_edit and appt.reminder else [] %}
+                            {% for reminder in ["2 hours before", "12 hours before", "1 day before", "1 week before"] %}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="reminder" value="{{ reminder }}"
+                                       {% if reminder in selected_reminders %}checked{% endif %}>
+                                <label class="form-check-label">{{ reminder }}</label>
+                            </div>
+                            {% endfor %}
+                            <div class="form-check form-check-inline mt-2">
+                                <label class="form-check-label">Custom reminder:</label>
+                                <input type="date" class="form-control d-inline-block w-auto ms-2"
+                                       name="custom_reminder"
+                                       value="{{ appt.custom_reminder.strftime('%Y-%m-%d') if is_edit and appt.custom_reminder else '' }}">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-3 mt-4">
+                            <button type="submit" class="btn add-appt-submit">
+                                {{ 'Update Appointment' if is_edit else 'Add Appointment' }}
+                            </button>
+                            {% if is_edit %}
+                            <a href="{{ url_for('main.appointment_manager') }}" class="btn add-appt-submit">Cancel
+                                Update</a>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to Chronic Care{% endblock %}
+
+{% block content %}
+<div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="text-center">
+        <div class="p-4 mb-4 welcome-container">
+            <h1 class="fw-bold text-dark">Welcome!</h1>
+        </div>
+        <h4 class="fw-semibold text-dark">Chronic Pain Tracker</h4>
+        <p class="fw-bold text-dark">Track your medical journey easily!</p>
+        <p class="text-muted" style="max-width: 500px; margin: auto;">
+            Manage appointments, store medical documents, receive reminders,
+            and easily share your health recorders with providers
+        </p>
+        <div class="mt-4">
+            <a href="{{ url_for('main.login') }}" class="btn intro-btn px-4 me-3">Login</a>
+            <a href="{{ url_for('main.register') }}" class="btn intro-btn px-4">Register</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
